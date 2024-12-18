@@ -1,0 +1,7 @@
+.mainForm{
+    height: 500px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0 20px;
+}

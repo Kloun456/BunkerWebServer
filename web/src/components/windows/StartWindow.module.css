@@ -1,0 +1,29 @@
+.startWindow{
+    background-color: white;
+    width: 80%;
+    height: 90%;
+    border-radius: 16px;
+    display: flex; 
+    flex-direction: column;
+    padding: 10px 15px;
+}
+
+.imageContainer{
+    width: 150px;
+    height: 150px;
+}
+
+.header{
+    width: 100%;
+    height: 200px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+}
+
+.footer{
+    height: 100px;
+    width: 100%;
+    background-color: aqua;
+}

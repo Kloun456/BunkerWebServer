@@ -1,0 +1,6 @@
+@BunkerWebServer_HostAddress = http://localhost:5250
+
+GET {{BunkerWebServer_HostAddress}}
+Accept: application/json
+
+###

@@ -1,4 +1,5 @@
 ﻿using BunkerWebServer.Core.Services.Rooms;
+using BunkerWebServer.Core.Services.Sessions;
 using BunkerWebServer.Core.Services.Users;
 using BunkerWebServer.Infrastructure.Contexts;
 using BunkerWebServer.Infrastructure.Data.Repositories.Rooms;
@@ -17,6 +18,25 @@ namespace BunkerWebServer.Api.Extensions
         {
             serviceCollection.AddTransient<IRoomService, RoomService>();
             serviceCollection.AddTransient<IUserService, UserService>();
+            serviceCollection.AddTransient<ISessionService, SessionService>();
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddRedis(this IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = SettingsManager._redisSetting.Connections.DefaultConnection;
+                options.InstanceName = SettingsManager._redisSetting.InstanceName;
+            });
+
+            serviceCollection.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(SettingsManager._redisSetting.SessionSettings!.Lifetime); 
+                options.Cookie.HttpOnly = SettingsManager._redisSetting.SessionSettings!.HttpOnly; 
+                options.Cookie.IsEssential = SettingsManager._redisSetting.SessionSettings!.IsEssential; 
+            });
+            
             return serviceCollection;
         }
 

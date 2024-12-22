@@ -18,6 +18,7 @@ public class Startup
             .AddServices()
             .AddContexts()
             .AddSwagger()
+            .AddRedis()
             .AddControllers();
     }
 
@@ -32,6 +33,7 @@ public class Startup
         app.UseRouting();
         app.UseCors("AllowSpecificOrigin");
         app.UseSwagger();
+        app.UseSession();
         app.UseSwaggerUI(c =>
         {
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");

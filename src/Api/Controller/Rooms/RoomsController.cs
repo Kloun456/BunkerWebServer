@@ -1,4 +1,5 @@
-﻿using BunkerWebServer.Api.Dto.Rooms;
+﻿using System.Net;
+using BunkerWebServer.Api.Dto.Rooms;
 using BunkerWebServer.Api.Mappers.Rooms;
 using BunkerWebServer.Core.Models.Users;
 using BunkerWebServer.Core.Services.Rooms;
@@ -14,6 +15,7 @@ public class RoomsController(IRoomService roomService) : ControllerBase
     [HttpPost]
     public async Task<RoomResponse> CreateRoom([FromBody] CreateRoomRequest createRoomRequest)
     {
+        HttpContext.Session.SetString("", "");
         var room = await roomService.CreateRoom(createRoomRequest.ToCreateRoom());
         return room.ToRoomResponse();
     }

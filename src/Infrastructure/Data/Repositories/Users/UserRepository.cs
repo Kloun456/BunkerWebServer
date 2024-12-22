@@ -1,4 +1,5 @@
-﻿using BunkerWebServer.Core.Models.Users;
+﻿using System.Text;
+using BunkerWebServer.Core.Models.Users;
 using BunkerWebServer.Infrastructure.Contexts;
 using BunkerWebServer.Infrastructure.Data.Entities.Users;
 using BunkerWebServer.Infrastructure.Data.Mappers.Users;
@@ -8,9 +9,11 @@ namespace BunkerWebServer.Infrastructure.Data.Repositories.Users
 {
     public interface IUserRepository
     {
-        Task<User?> GetUser(Guid userId);
+        Task<User?> GetUser(string userName);
         Task<User> CreateUser(CreateUser userName);
         Task<IEnumerable<User>> GetUsers();
+        Task<bool> UserExists(string userName);
+        Task<bool> UserIsValid(ValidateUser validateUser);
     }
 
     public class UserRepository(ApplicationDbContext dbContext) : IUserRepository
@@ -22,11 +25,12 @@ namespace BunkerWebServer.Infrastructure.Data.Repositories.Users
             var user = await dbContext.Users.AddAsync(new UserData
             {
                 Id = Guid.NewGuid(),
-                Name = createUser.UserName
+                Name = createUser.UserName,
+                Password = Encoding.UTF8.GetBytes(createUser.Password) 
             });
             await dbContext.SaveChangesAsync();
             
-            return await GetUser(user.Entity.Id) ?? throw new NullReferenceException(ErrorNotCreateUser);
+            return await GetUser(user.Entity.Name) ?? throw new NullReferenceException(ErrorNotCreateUser);
         }
 
         public async Task<IEnumerable<User>> GetUsers()
@@ -35,11 +39,28 @@ namespace BunkerWebServer.Infrastructure.Data.Repositories.Users
             return usersData.Select(userData => userData.MapToUser());
         }
 
-        public async Task<User?> GetUser(Guid userId)
+        public async Task<bool> UserExists(string userName)
         {
             var userData = await (from user in dbContext.Users
-                            where user.Id == userId
-                            select user).FirstOrDefaultAsync();
+                where user.Name == userName
+                select user).FirstOrDefaultAsync();
+            return userData != null;
+        }
+
+        public async Task<bool> UserIsValid(ValidateUser validateUser)
+        {
+            var userData = await (from user in dbContext.Users
+                where user.Name == validateUser.UserName
+                select user).FirstOrDefaultAsync();
+
+            return userData!= null;
+        }
+
+        public async Task<User?> GetUser(string userName)
+        {
+            var userData = await (from user in dbContext.Users
+                where user.Name == userName
+                select user).FirstOrDefaultAsync();
 
             return userData?.MapToUser() ?? null;
         }

@@ -7,4 +7,6 @@ public class CreateUserRequest
 {
     [JsonProperty("name")]
     public required string Name { get; set; }
+    [JsonProperty("password")]
+    public required string Password { get; set; }
 }

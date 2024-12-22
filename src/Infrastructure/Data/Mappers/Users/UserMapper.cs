@@ -1,4 +1,5 @@
-﻿using BunkerWebServer.Core.Models.Users;
+﻿using System.Text;
+using BunkerWebServer.Core.Models.Users;
 using BunkerWebServer.Infrastructure.Data.Entities.Users;
 
 namespace BunkerWebServer.Infrastructure.Data.Mappers.Users
@@ -10,7 +11,8 @@ namespace BunkerWebServer.Infrastructure.Data.Mappers.Users
             return new User
             { 
                 Id = userData.Id, 
-                Name = userData.Name 
+                Name = userData.Name,
+                HashPassword = Encoding.UTF8.GetString(userData.Password)
             };
         }
     }

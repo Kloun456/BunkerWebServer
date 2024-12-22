@@ -2,4 +2,7 @@
 
 namespace BunkerWebServer.Core.Models.Users;
 
-public class User : BaseModel;
+public class User : BaseModel
+{
+    public required string HashPassword { get; set; } 
+}

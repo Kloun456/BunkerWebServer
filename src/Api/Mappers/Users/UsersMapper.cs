@@ -9,7 +9,8 @@ public static class UsersMapper
     {
         return new CreateUser
         {
-            UserName = createUserRequest.Name
+            UserName = createUserRequest.Name,
+            Password = createUserRequest.Password
         };
     }
 
@@ -21,5 +22,13 @@ public static class UsersMapper
             Name = user.Name
         };
     }
-    
+
+    public static ValidateUser ToValidateUser(this LoginUserRequest loginUserRequest)
+    {
+        return new ValidateUser
+        {
+            Password = loginUserRequest.Password,
+            UserName = loginUserRequest.UserName
+        };
+    }
 }

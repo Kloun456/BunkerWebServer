@@ -1,4 +1,6 @@
-﻿using BunkerWebServer.Core.Services.Sessions;
+﻿using BunkerWebServer.Api.Dto.Sessions;
+using BunkerWebServer.Api.Mappers.Sessions;
+using BunkerWebServer.Core.Services.Sessions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BunkerWebServer.Api.Controller.Session;
@@ -8,9 +10,9 @@ namespace BunkerWebServer.Api.Controller.Session;
 public class SessionsController(ISessionService sessionService) : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult> CreateSession([FromBody] string userName)
+    public async Task<ActionResult> CreateSession([FromBody] CreateSessionRequest createSessionRequest)
     {
-        return Ok(await sessionService.CreateSession(userName));
+        return Ok(await sessionService.CreateSession(createSessionRequest.ToCreateSession()));
     }
     
     [HttpGet("{idSession}")]

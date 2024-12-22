@@ -16,10 +16,10 @@ public class UsersController(IUserService userService) : ControllerBase
         return users.Select(user => user.ToUserResponse());
     }
 
-    [HttpGet("{userId:guid}")]
-    public async Task<UserResponse?> GetUser(Guid userId)
+    [HttpGet("{userName}")]
+    public async Task<UserResponse?> GetUser(string userName)
     {
-        var user = await userService.GetUser(userId);
+        var user = await userService.GetUser(userName);
         return user?.ToUserResponse();
     }
 

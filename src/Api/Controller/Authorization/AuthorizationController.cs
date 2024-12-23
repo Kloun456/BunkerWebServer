@@ -1,7 +1,6 @@
 ﻿using BunkerWebServer.Api.Dto.Users;
 using BunkerWebServer.Api.Mappers.Users;
-using BunkerWebServer.Core.Models.Sessions;
-using BunkerWebServer.Core.Services.Sessions;
+using BunkerWebServer.Core.Services.Authorization;
 using BunkerWebServer.Core.Services.Users;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,20 +9,22 @@ namespace BunkerWebServer.Api.Controller.Authorization;
 
 [Route("api/authorization")]
 [ApiController]
-public class AuthoriaztionController(IUserService userService, ISessionService sessionService) : ControllerBase
+public class AuthoriaztionController(IUserService userService, IAuthorizationService authorizationService) 
+    : ControllerBase
 {
     [HttpPost("login")]
-    public async Task<string?> Login(LoginUserRequest loginUserRequest)
+    public async Task<ActionResult<string?>> Login(LoginUserRequest loginUserRequest)
     {
         if (!await userService.UserIsValid(loginUserRequest.ToValidateUser()))
         {
-            throw new Exception("Invalid username or password");
+            return Unauthorized();
         }
-
-        return await sessionService.CreateSession(new CreateSession
+        
+        var token = authorizationService.GenerateJwtToken(loginUserRequest.UserName);
+        return Ok(new
         {
-            UserName = loginUserRequest.UserName,
-            Password = loginUserRequest.Password
+            Token = token
         });
     }
+   
 }

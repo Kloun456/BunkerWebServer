@@ -1,11 +1,14 @@
-﻿using BunkerWebServer.Core.Services.Rooms;
-using BunkerWebServer.Core.Services.Sessions;
+﻿using System.Text;
+using BunkerWebServer.Core.Services.Authorization;
+using BunkerWebServer.Core.Services.Rooms;
 using BunkerWebServer.Core.Services.Users;
 using BunkerWebServer.Infrastructure.Contexts;
 using BunkerWebServer.Infrastructure.Data.Repositories.Rooms;
 using BunkerWebServer.Infrastructure.Data.Repositories.Users;
 using BunkerWebServer.Infrastructure.Managers.Settings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace BunkerWebServer.Api.Extensions
@@ -18,7 +21,33 @@ namespace BunkerWebServer.Api.Extensions
         {
             serviceCollection.AddTransient<IRoomService, RoomService>();
             serviceCollection.AddTransient<IUserService, UserService>();
-            serviceCollection.AddTransient<ISessionService, SessionService>();
+            serviceCollection.AddTransient<IAuthorizationService, AuthorizationService>();
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddJwt(this IServiceCollection serviceCollection)
+        {
+            serviceCollection
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = SettingsManager.JwtSetting.ValidateIssuer,
+                        ValidateAudience = SettingsManager.JwtSetting.ValidateAudience,
+                        ValidateLifetime = SettingsManager.JwtSetting.ValidateLifetime,
+                        ValidateIssuerSigningKey = SettingsManager.JwtSetting.ValidateIssuerSigningKey,
+                        ValidIssuer = SettingsManager.JwtSetting.ValidIssuer,
+                        ValidAudience = SettingsManager.JwtSetting.ValidAudience,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(SettingsManager.JwtSetting.IssuerSigningKey)),
+                        
+                    };
+                });
             return serviceCollection;
         }
 
@@ -26,15 +55,15 @@ namespace BunkerWebServer.Api.Extensions
         {
             serviceCollection.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = SettingsManager._redisSetting.Connections.DefaultConnection;
-                options.InstanceName = SettingsManager._redisSetting.InstanceName;
+                options.Configuration = SettingsManager.RedisSetting.Connections.DefaultConnection;
+                options.InstanceName = SettingsManager.RedisSetting.InstanceName;
             });
 
             serviceCollection.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(SettingsManager._redisSetting.SessionSettings!.Lifetime); 
-                options.Cookie.HttpOnly = SettingsManager._redisSetting.SessionSettings!.HttpOnly; 
-                options.Cookie.IsEssential = SettingsManager._redisSetting.SessionSettings!.IsEssential; 
+                options.IdleTimeout = TimeSpan.FromMinutes(SettingsManager.RedisSetting.SessionSettings!.Lifetime); 
+                options.Cookie.HttpOnly = SettingsManager.RedisSetting.SessionSettings!.HttpOnly; 
+                options.Cookie.IsEssential = SettingsManager.RedisSetting.SessionSettings!.IsEssential; 
             });
             
             return serviceCollection;
@@ -50,7 +79,7 @@ namespace BunkerWebServer.Api.Extensions
         public static IServiceCollection AddContexts(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(connectionString: SettingsManager._dbSetting.Connections.DefaultConnection));
+                options.UseNpgsql(connectionString: SettingsManager.DbSetting.Connections.DefaultConnection));
             return serviceCollection;
         }
 

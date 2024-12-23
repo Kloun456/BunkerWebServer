@@ -5,22 +5,22 @@ namespace BunkerWebServer.Infrastructure.Managers.Settings
 {
     public class SettingsManager
     {
-        private readonly IConfigurationRoot _config;
-        public readonly DbSettings _dbSetting;
-        public readonly RedisSettings _redisSetting;
-
-        private const string _NameSettingsFile = "appsettings.json";
-        private const string _NameSettingsDbSection = "Db";
-        private const string _NameSettingsRedisSection = "Redis";
+        public readonly DbSettings DbSetting;
+        public readonly RedisSettings RedisSetting;
+        public readonly JwtSettings JwtSetting;
         
-
+        private const string NameSettingsFile = "appsettings.json";
+        private const string NameSettingsDbSection = "Db";
+        private const string NameSettingsRedisSection = "Redis";
+        private const string NameSettingsJwtSetting = "Jwt";
+        
         public SettingsManager() 
         {
-            _config = new ConfigurationBuilder()
-            .AddJsonFile(_NameSettingsFile)
-            .AddEnvironmentVariables()
-            .Build();
-            _dbSetting = _config.GetRequiredSection(_NameSettingsDbSection)
+            var config = new ConfigurationBuilder()
+                .AddJsonFile(NameSettingsFile)
+                .AddEnvironmentVariables()
+                .Build();
+            DbSetting = config.GetRequiredSection(NameSettingsDbSection)
                                 .Get<DbSettings>() ?? 
                          new DbSettings { 
                              Connections = new Connections 
@@ -28,16 +28,29 @@ namespace BunkerWebServer.Infrastructure.Managers.Settings
                                  DefaultConnection = "" 
                              } 
                          };
-            _redisSetting = _config.GetRequiredSection(_NameSettingsRedisSection)
-                                .Get<RedisSettings>() ??
-                            new RedisSettings
-                            {
-                                Connections = new Connections
-                                {
-                                    DefaultConnection = ""
-                                },
-                                InstanceName = ""
-                            };
+            RedisSetting = config.GetRequiredSection(NameSettingsRedisSection)
+                               .Get<RedisSettings>() ?? 
+                           new RedisSettings 
+                           { 
+                               Connections = new Connections
+                               { 
+                                   DefaultConnection = ""
+                               },
+                               InstanceName = ""
+                           };
+            JwtSetting = config.GetRequiredSection(NameSettingsJwtSetting)
+                             .Get<JwtSettings>() ?? 
+                         new JwtSettings 
+                         { 
+                             ValidateIssuer = true,
+                             ValidateAudience = true,
+                             ValidateLifetime = true,
+                             ValidateIssuerSigningKey = true,
+                             IssuerSigningKey = "",
+                             ValidAudience = "",
+                             ValidIssuer = "",
+                             ExpiresMinute = 2
+                         };
         }
     }
 }

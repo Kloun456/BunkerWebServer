@@ -19,6 +19,7 @@ public class Startup
             .AddContexts()
             .AddSwagger()
             .AddRedis()
+            .AddJwt()
             .AddControllers();
     }
 
@@ -34,6 +35,8 @@ public class Startup
         app.UseCors("AllowSpecificOrigin");
         app.UseSwagger();
         app.UseSession();
+        app.UseAuthentication(); 
+        app.UseAuthorization();
         app.UseSwaggerUI(c =>
         {
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");

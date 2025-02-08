@@ -18,7 +18,6 @@ public class Startup
             .AddServices()
             .AddContexts()
             .AddSwagger()
-            .AddRedis()
             .AddJwt()
             .AddControllers();
     }
@@ -34,7 +33,7 @@ public class Startup
         app.UseRouting();
         app.UseCors("AllowSpecificOrigin");
         app.UseSwagger();
-        app.UseSession();
+        //app.UseSession();
         app.UseAuthentication(); 
         app.UseAuthorization();
         app.UseSwaggerUI(c =>
@@ -58,6 +57,7 @@ public static class ConfigureEndpoints
     {
         builder.MapGet("/ws", async context =>
         {
+            var t = 2l;
             if (context.WebSockets.IsWebSocketRequest)
             {
                 WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();

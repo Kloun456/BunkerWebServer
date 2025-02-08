@@ -6,12 +6,12 @@ namespace BunkerWebServer.Infrastructure.Managers.Settings
     public class SettingsManager
     {
         public readonly DbSettings DbSetting;
-        public readonly RedisSettings RedisSetting;
+        //public readonly RedisSettings RedisSetting;
         public readonly JwtSettings JwtSetting;
         
         private const string NameSettingsFile = "appsettings.json";
         private const string NameSettingsDbSection = "Db";
-        private const string NameSettingsRedisSection = "Redis";
+        //private const string NameSettingsRedisSection = "Redis";
         private const string NameSettingsJwtSetting = "Jwt";
         
         public SettingsManager() 
@@ -28,7 +28,7 @@ namespace BunkerWebServer.Infrastructure.Managers.Settings
                                  DefaultConnection = "" 
                              } 
                          };
-            RedisSetting = config.GetRequiredSection(NameSettingsRedisSection)
+            /*RedisSetting = config.GetRequiredSection(NameSettingsRedisSection)
                                .Get<RedisSettings>() ?? 
                            new RedisSettings 
                            { 
@@ -37,7 +37,7 @@ namespace BunkerWebServer.Infrastructure.Managers.Settings
                                    DefaultConnection = ""
                                },
                                InstanceName = ""
-                           };
+                           };*/
             JwtSetting = config.GetRequiredSection(NameSettingsJwtSetting)
                              .Get<JwtSettings>() ?? 
                          new JwtSettings 

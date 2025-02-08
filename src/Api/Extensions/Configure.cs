@@ -51,7 +51,7 @@ namespace BunkerWebServer.Api.Extensions
             return serviceCollection;
         }
 
-        public static IServiceCollection AddRedis(this IServiceCollection serviceCollection)
+        /*public static IServiceCollection AddRedis(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddStackExchangeRedisCache(options =>
             {
@@ -67,7 +67,7 @@ namespace BunkerWebServer.Api.Extensions
             });
             
             return serviceCollection;
-        }
+        }*/
 
         public static IServiceCollection AddRepository(this IServiceCollection serviceCollection)
         {

@@ -18,7 +18,7 @@ public static class RoomsMapper
         return new RoomResponse
         {
             Id = room.Id,
-            Name = room.Name,
+            Name = "TEST",
             CountMembers = room.CountMembers,
             Members = room.Members.Select(member => member.ToUserInRoomResponse())
         };

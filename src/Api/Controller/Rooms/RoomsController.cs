@@ -15,12 +15,12 @@ public class RoomsController(IRoomService roomService) : ControllerBase
     [HttpPost]
     public async Task<RoomResponse> CreateRoom([FromBody] CreateRoomRequest createRoomRequest)
     {
-        HttpContext.Session.SetString("", "");
+        //HttpContext.Session.SetString("", "");
         var room = await roomService.CreateRoom(createRoomRequest.ToCreateRoom());
         return room.ToRoomResponse();
     }
 
-    [HttpPatch("{roomId:guid}/members/{userId:guid}")]
+    [HttpPatch("{roomId:guid}/memberssssss/{userId:guid}")]
     public async Task UpdateMember(Guid roomId, Guid userId, [FromBody]JsonPatchDocument<User> patchDoc)
     {
         await roomService.AddMember(roomId, userId);

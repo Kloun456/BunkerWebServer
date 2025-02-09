@@ -9,20 +9,15 @@ on:
 env:
  LOGIN: ${{ secrets.DOCKER_LOGIN }}
  NAME: ${{ secrets.DOCKER_NAME }}
- TAG: ${{ github.ref }}
- CLEAN_TAG: ${{ steps.extract_tag.outputs.tag }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Extract tag
-      id: extract_tag
-      run: echo "tag=$(echo ${GITHUB_REF} | sed 's|^refs/heads/||')" >> $GITHUB_ENV
     - name: Login Docker
       run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build -t $LOGIN/$NAME:$CLEAN_TAG -f Dockerfile .
+      run: docker build -t $LOGIN/$NAME:${{ github.ref_name }} -f Dockerfile .
     - name: Push image to docker.io
-      run: docker push $LOGIN/$NAME:$CLEAN_TAG
+      run: docker push $LOGIN/$NAME:${{ github.ref_name }}

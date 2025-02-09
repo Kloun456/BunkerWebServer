@@ -6,13 +6,18 @@ on:
   pull_request:
     branches: [ "release" ]
 
+env:
+ LOGIN: ${{ secrets.DOCKER_LOGIN }}
+ NAME: ${{ secrets.DOCKER_NAME }}
+
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
+    - name: Login Docker
+      run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      run: docker build -t $LOGIN/$NAME:${GITHUB_REF:11} -f Dockerfile .
+    - name: Push image to docker.io
+      run: docker push $LOGIN/$NAME:${GITHUB_REF:11}

@@ -19,5 +19,21 @@ jobs:
     - uses: actions/checkout@v4
     - name: Build the Docker image
       run: docker build -t $LOGIN/$NAME:${{ github.ref_name }} -f Dockerfile .
-    - name: Push image to docker.io
-      run: docker push $LOGIN/$NAME:${{ github.ref_name }}
+    - name: Save Docker image locally
+      run: |
+        mkdir -p ./docker-images
+        docker save $LOGIN/$NAME:${{ github.ref_name }} > ./docker-images/image.tar
+    - name: Stop and remove existing container
+      run: |
+        CONTAINER_NAME="bunkerServer"
+        if docker ps -a --filter "name=$CONTAINER_NAME" --format '{{.Names}}' | grep -q "$CONTAINER_NAME"; then
+          echo "Stopping and removing existing container..."
+          docker stop $CONTAINER_NAME || true
+          docker rm $CONTAINER_NAME || true
+        fi
+    - name: Load Docker image from file
+      run: docker load < ./docker-images/image.tar
+    - name: Run the new container
+      run: |
+        CONTAINER_NAME="bunkerServer"
+        docker run -d --name $CONTAINER_NAME $LOGIN/$NAME:${{ github.ref_name }}

@@ -1,4 +1,5 @@
 ﻿using System.Net.WebSockets;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace BunkerWebServer.Api.Extensions;
 
@@ -20,6 +21,8 @@ public class Startup
             .AddSwagger()
             .AddJwt()
             .AddControllers();
+            services
+            .AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy("Healthy"));
     }
 
 
@@ -41,7 +44,10 @@ public class Startup
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             c.RoutePrefix = string.Empty; // Доступ к Swagger UI по корневому URL
         });
-
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapHealthChecks("/health");
+        });
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
